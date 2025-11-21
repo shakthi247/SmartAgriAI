@@ -1,0 +1,15 @@
+[server]
+# Performance optimizations
+maxUploadSize = 50
+maxMessageSize = 50
+
+[browser]
+# Reduce resource usage
+gatherUsageStats = false
+
+[theme]
+# Minimal theme for faster rendering
+primaryColor = "#2E8B57"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F0F8F0"
+textColor = "#262730"

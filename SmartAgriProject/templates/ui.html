@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Agriculture Solutions - Crop Yield, Irrigation & Rotation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+  body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: url('styles/agriculture.jpg') no-repeat top center fixed, linear-gradient(180deg, #d0f0c0 0%, #a3d9a5 100%);
+    background-size: cover;
+    color: #2d3a1a;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 15px 10px 40px;
+    box-sizing: border-box;
+  }
+  .container {
+    max-width: 600px;
+    margin: 10px auto;
+  }
+  @media screen and (max-width: 768px) {
+    .container {
+      max-width: 90%;
+      margin: 10px auto;
+    }
+  }
+  h1 {
+    margin: 10px 0 15px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: #135214;
+  }
+  h2 {
+    font-size: 1.4rem;
+    color: #2f591e;
+    border-bottom: 2px solid #6ab04c;
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+    margin-top: 25px;
+  }
+  .container {
+    background: #fff;
+    border-radius: 10px;
+    padding: 15px 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  }
+  label {
+    display: block;
+    font-weight: 500;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    color: #3a4d1c;
+  }
+  select, input[type="number"], input[type="text"] {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1.8px solid #a3d9a5;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.25s ease;
+  }
+  select:focus, input[type="number"]:focus, input[type="text"]:focus {
+    border-color: #4caf50;
+    outline: none;
+  }
+  button {
+    margin-top: 15px;
+    width: 100%;
+    background-color: #4caf50;
+    color: white;
+    border: 2px solid #3b7a30;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 12px;
+    cursor: pointer;
+    transition: background-color 0.25s ease, box-shadow 0.3s ease, border-color 0.3s ease, outline-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    outline: 2px solid transparent;
+    outline-offset: 4px;
+  }
+  button:hover {
+    background-color: #3b7a30;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    border-color: #6ab04c;
+    outline-color: #6ab04c;
+  }
+  button:focus {
+    outline-color: #4caf50;
+    box-shadow: 0 0 8px 2px rgba(76, 175, 80, 0.6);
+  }
+  .result {
+    margin-top: 12px;
+    background: #e9f7d9;
+    border-left: 5px solid #6ab04c;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-weight: 600;
+    min-height: 42px;
+    color: #3a581a;
+  }
+  footer {
+    margin-top: auto;
+    font-size: 0.8rem;
+    color: #4a5f23;
+    text-align: center;
+  }
+  /* Responsive font */
+  @media screen and (max-width: 400px) {
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+  <h1>Agriculture Solutions</h1>
+
+  <div class="container" id="crop-yield-section">
+    <h2>Crop Yield Prediction</h2>
+    <label for="cropTypeYield">Crop Type</label>
+    <select id="cropTypeYield" aria-label="Select crop type for yield prediction">
+      <option value="" disabled selected>Select crop</option>
+      <option value="wheat">Wheat</option>
+      <option value="corn">Corn</option>
+      <option value="rice">Rice</option>
+      <option value="soybean">Soybean</option>
+      <option value="cotton">Cotton</option>
+    </select>
+
+    <label for="soilTypeYield">Soil Type</label>
+    <select id="soilTypeYield" aria-label="Select soil type for yield prediction">
+      <option value="" disabled selected>Select soil type</option>
+      <option value="loam">Loam</option>
+      <option value="sandy">Sandy</option>
+      <option value="clay">Clay</option>
+      <option value="peat">Peat</option>
+      <option value="chalk">Chalk</option>
+    </select>
+
+    <label for="areaSize">Area Size (hectares)</label>
+    <input type="number" id="areaSize" aria-label="Input area size in hectares" min="0.1" max="10000" step="0.1" placeholder="e.g. 5.0" />
+
+    <label for="rainfall">Average Rainfall (mm/month)</label>
+    <input type="number" id="rainfall" aria-label="Input average rainfall in millimeters per month" min="0" max="500" step="1" placeholder="e.g. 100" />
+
+    <button onclick="predictYield()">Predict Yield</button>
+    <div class="result" id="yieldResult" aria-live="polite"></div>
+  </div>
+
+  <div class="container" id="irrigation-section">
+    <h2>Smart Irrigation Management</h2>
+    <label for="cropTypeIrrigation">Crop Type</label>
+    <select id="cropTypeIrrigation" aria-label="Select crop type for irrigation advice">
+      <option value="" disabled selected>Select crop</option>
+      <option value="wheat">Wheat</option>
+      <option value="corn">Corn</option>
+      <option value="rice">Rice</option>
+      <option value="soybean">Soybean</option>
+      <option value="cotton">Cotton</option>
+    </select>
+
+    <label for="soilMoisture">Soil Moisture Level (%)</label>
+    <input type="number" id="soilMoisture" aria-label="Input soil moisture level as percentage" min="0" max="100" step="1" placeholder="e.g. 45" />
+
+    <label for="weatherCondition">Weather Condition</label>
+    <select id="weatherCondition" aria-label="Select current weather condition">
+      <option value="" disabled selected>Select weather</option>
+      <option value="sunny">Sunny</option>
+      <option value="cloudy">Cloudy</option>
+      <option value="rainy">Rainy</option>
+      <option value="windy">Windy</option>
+    </select>
+
+    <button onclick="assessIrrigation()">Get Irrigation Advice</button>
+    <div class="result" id="irrigationResult" aria-live="polite"></div>
+  </div>
+
+  <div class="container" id="crop-rotation-section">
+    <h2>Crop Rotation Suggestions</h2>
+    <label for="lastCrop">Last Crop Grown</label>
+    <select id="lastCrop" aria-label="Select the last crop grown in the field">
+      <option value="" disabled selected>Select last crop</option>
+      <option value="wheat">Wheat</option>
+      <option value="corn">Corn</option>
+      <option value="rice">Rice</option>
+      <option value="soybean">Soybean</option>
+      <option value="cotton">Cotton</option>
+      <option value="vegetables">Vegetables</option>
+      <option value="legumes">Legumes</option>
+    </select>
+
+    <label for="soilTypeRotation">Soil Type</label>
+    <select id="soilTypeRotation" aria-label="Select soil type for rotation suggestion">
+      <option value="" disabled selected>Select soil type</option>
+      <option value="loam">Loam</option>
+      <option value="sandy">Sandy</option>
+      <option value="clay">Clay</option>
+      <option value="peat">Peat</option>
+      <option value="chalk">Chalk</option>
+    </select>
+
+    <button onclick="suggestRotation()">Suggest Crop</button>
+    <div class="result" id="rotationResult" aria-live="polite"></div>
+  </div>
+
+  <style>
+    #chatbot-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #4caf50;
+      color: white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+    #chatbot-popup {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 320px;
+      max-height: 400px;
+      background: #f9fff9;
+      border: 1px solid #a3d9a5;
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+      display: none;
+      flex-direction: column;
+      padding: 10px;
+      z-index: 1000;
+    }
+    #chatbot-messages {
+      height: 250px !important;
+      overflow-y: auto;
+      border: 1px solid #a3d9a5;
+      padding: 10px;
+      border-radius: 5px;
+      background: #f9fff9;
+      flex-grow: 1;
+      margin-bottom: 10px;
+    }
+    #chatbot-input {
+      width: calc(100% - 80px) !important;
+      padding: 7px;
+      border: 1.8px solid #a3d9a5;
+      border-radius: 5px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    #chatbot-send {
+      width: 70px !important;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 10px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+  </style>
+
+  <div id="chatbot-icon" title="Chat with us!">&#128172;</div>
+
+  <div id="chatbot-popup" role="dialog" aria-modal="true" aria-labelledby="chatbot-title">
+    <h2 id="chatbot-title" style="margin-top: 0; color: #2f591e;">Agriculture Chatbot</h2>
+    <div id="chatbot-messages" aria-live="polite" aria-relevant="additions"></div>
+    <div id="chatbot-suggestions" style="margin-bottom: 10px; font-size: 0.9rem; color: #2f591e;">
+      <strong>Suggested Questions:</strong>
+      <ul style="padding-left: 20px; margin-top: 5px; cursor: pointer;">
+        <li class="suggestion-item">What affects crop yield?</li>
+        <li class="suggestion-item">How to manage irrigation?</li>
+        <li class="suggestion-item">What is crop rotation?</li>
+        <li class="suggestion-item">When should I water my plants?</li>
+        <li class="suggestion-item">What are the best crops for my soil?</li>
+      </ul>
+    </div>
+    <div style="display: flex; align-items: center;">
+      <input type="text" id="chatbot-input" placeholder="Ask a question about agriculture..." aria-label="Chatbot question input" />
+      <button id="chatbot-send">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // Toggle chatbot popup
+    const chatbotIcon = document.getElementById('chatbot-icon');
+    const chatbotPopup = document.getElementById('chatbot-popup');
+
+    chatbotIcon.addEventListener('click', () => {
+      if (chatbotPopup.style.display === 'flex') {
+        chatbotPopup.style.display = 'none';
+      } else {
+        chatbotPopup.style.display = 'flex';
+        chatbotInput.focus();
+      }
+    });
+
+    // Chatbot functionality
+    const chatbotMessages = document.getElementById('chatbot-messages');
+    const chatbotInput = document.getElementById('chatbot-input');
+    const chatbotSend = document.getElementById('chatbot-send');
+
+    function appendMessage(sender, message) {
+      const messageDiv = document.createElement('div');
+      messageDiv.style.marginBottom = '8px';
+      messageDiv.style.padding = '6px 10px';
+      messageDiv.style.borderRadius = '8px';
+      messageDiv.style.maxWidth = '80%';
+      if (sender === 'user') {
+        messageDiv.style.backgroundColor = '#d0f0c0';
+        messageDiv.style.alignSelf = 'flex-end';
+        messageDiv.style.textAlign = 'right';
+        messageDiv.textContent = `You: ${message}`;
+      } else {
+        messageDiv.style.backgroundColor = '#a3d9a5';
+        messageDiv.style.alignSelf = 'flex-start';
+        messageDiv.style.textAlign = 'left';
+        messageDiv.textContent = `Bot: ${message}`;
+      }
+      chatbotMessages.appendChild(messageDiv);
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    async function sendChatbotMessage() {
+      const question = chatbotInput.value.trim();
+      if (!question) return;
+      appendMessage('user', question);
+      chatbotInput.value = '';
+      try {
+        const response = await fetch('http://localhost:5000/api/chatbot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          appendMessage('bot', data.answer);
+        } else {
+          appendMessage('bot', 'Error getting response from chatbot.');
+        }
+      } catch (error) {
+        appendMessage('bot', 'Error connecting to chatbot API.');
+      }
+    }
+
+    chatbotSend.addEventListener('click', sendChatbotMessage);
+    chatbotInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        sendChatbotMessage();
+      }
+    });
+
+    // Handle click on suggested questions
+    const suggestionItems = document.querySelectorAll('.suggestion-item');
+    suggestionItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const question = item.textContent;
+        chatbotInput.value = question;
+        sendChatbotMessage();
+      });
+    });
+  </script>
+
+  <div class="container" id="youtube-videos-section" style="max-width: 700px; margin-top: 30px;">
+    <h2>YouTube Videos on Agriculture</h2>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; justify-items: center;">
+      <div style="width: 320px;">
+        <h3>Soil Preparation</h3>
+        <iframe width="100%" height="180" src="https://www.youtube.com/embed/8ulpy_GFLDk" title="Soil Preparation" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div style="width: 320px;">
+        <h3>Understanding our Soil</h3>
+        <iframe width="100%" height="180" src="https://www.youtube.com/embed/A8qTRBc8Bws" title="Understanding our Soil" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div style="width: 320px;">
+        <h3>Pest Management Trick</h3>
+        <iframe width="100%" height="180" src="https://www.youtube.com/embed/46VNShXESog" title="Pest Management Trick" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div style="width: 320px;">
+        <h3>Natural Manure At Home</h3>
+        <iframe width="100%" height="180" src="https://www.youtube.com/embed/CqMo9jQGQfw" title="Natural Manure At Home" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div style="width: 320px;">
+        <h3>Crop Rotation Tips</h3>
+        <iframe width="100%" height="180" src="https://www.youtube.com/embed/Vm22g3N0wsM" title="Crop Rotation Tips" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div style="width: 320px;">
+        <h3>Rice Plantation</h3>
+        <iframe width="100%" height="180" src="https://www.youtube.com/embed/FW_bw9jdrlQ" title="Rice Plantation" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div style="width: 320px;">
+        <h3>Sowing Seeds</h3>
+        <iframe width="100%" height="180" src="https://www.youtube.com/embed/08r9flyFXYc" title="Sowing Seeds" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div style="width: 320px;">
+        <h3>Drip Irrigation Tips</h3>
+        <iframe width="100%" height="180" src="https://www.youtube.com/embed/LE1316nOMIQ" title="Drip Irrigation Tips" frameborder="0" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Footer links and modals */
+    #footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #4a5f23;
+      background-color: rgba(255, 255, 255, 0.7);
+      padding: 8px 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+    #footer-links button {
+      background: none;
+      border: none;
+      color: #4a5f23;
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 0.9rem;
+      padding: 0;
+    }
+    #footer-links button:hover {
+      color: #2f591e;
+    }
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .modal {
+      background: white;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 20px;
+      box-sizing: border-box;
+      color: #2d3a1a;
+    }
+    .modal h3 {
+      margin-top: 0;
+      color: #135214;
+    }
+    .modal-close {
+      float: right;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #4a5f23;
+    }
+    .community-message {
+      border-bottom: 1px solid #a3d9a5;
+      padding: 8px 0;
+    }
+    .community-message:last-child {
+      border-bottom: none;
+    }
+  </style>
+
+  <footer>
+    <div id="footer-links">
+      <button id="privacyPolicyBtn">Privacy Policy</button>
+      <button id="contactUsBtn" type="button">Contact Us</button>
+      <button id="communityMessagesBtn">Community Messages</button>
+      <button id="whoUsesBtn">Who Uses This Website</button>
+    </div>
+    &copy; 2024 Agriculture Solutions - Your Partner for Smart Farming
+  </footer>
+
+  <!-- Modals -->
+  <div id="privacyPolicyModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="privacyPolicyTitle">
+    <div class="modal">
+      <span class="modal-close" id="closePrivacyPolicy">&times;</span>
+      <h3 id="privacyPolicyTitle">Privacy Policy</h3>
+      <p>Your privacy is important to us. We do not collect personal data except for contact inquiries submitted through the Contact Us form. We do not share your information with third parties.</p>
+    </div>
+  </div>
+
+  <div id="contactUsModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="contactUsTitle">
+    <div class="modal">
+      <span class="modal-close" id="closeContactUs">&times;</span>
+      <h3 id="contactUsTitle">Contact Us</h3>
+      <form id="modalContactForm">
+        <label for="modalName">Name</label>
+        <input type="text" id="modalName" name="modalName" placeholder="Your full name" required />
+
+        <label for="modalEmail">Email Address</label>
+        <input type="email" id="modalEmail" name="modalEmail" placeholder="Your email address" required />
+
+        <label for="modalPhone">Phone Number</label>
+        <input type="tel" id="modalPhone" name="modalPhone" placeholder="Your phone number" required />
+
+        <label for="modalProblem">Problem Description</label>
+        <textarea id="modalProblem" name="modalProblem" rows="4" placeholder="Describe your problem or inquiry" required></textarea>
+
+        <button type="submit">Submit</button>
+      </form>
+      <div id="modalContactFormMessage" class="result" aria-live="polite" style="margin-top: 10px;"></div>
+    </div>
+  </div>
+
+  <div id="communityMessagesModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="communityMessagesTitle">
+    <div class="modal">
+      <span class="modal-close" id="closeCommunityMessages">&times;</span>
+      <h3 id="communityMessagesTitle">Community Messages</h3>
+      <div id="communityMessagesList" style="max-height: 300px; overflow-y: auto; margin-bottom: 10px;">
+        <!-- Messages will be appended here -->
+      </div>
+      <form id="communityMessageForm">
+        <label for="communityName">Name</label>
+        <input type="text" id="communityName" name="communityName" placeholder="Your name" required />
+
+        <label for="communityMessage">Message</label>
+        <textarea id="communityMessage" name="communityMessage" rows="3" placeholder="Your message" required></textarea>
+
+        <button type="submit">Post Message</button>
+      </form>
+      <div id="communityMessageFormMessage" class="result" aria-live="polite" style="margin-top: 10px;"></div>
+    </div>
+  </div>
+
+  <div id="whoUsesModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="whoUsesTitle">
+    <div class="modal">
+      <span class="modal-close" id="closeWhoUses">&times;</span>
+      <h3 id="whoUsesTitle">Who Uses This Website</h3>
+      <p>This website is used by farmers, agricultural students, researchers, and anyone interested in smart farming solutions.</p>
+      <h4>How to Use This Website</h4>
+      <ol>
+        <li><strong>Crop Yield Prediction:</strong> Select crop type, soil type, area size, and rainfall to estimate your crop yield.</li>
+        <li><strong>Smart Irrigation Management:</strong> Input crop type, soil moisture, and weather condition to get irrigation advice.</li>
+        <li><strong>Crop Rotation Suggestions:</strong> Provide the last crop grown and soil type to get crop rotation recommendations.</li>
+        <li><strong>Chatbot:</strong> Use the chatbot icon at the bottom right to ask agriculture-related questions.</li>
+        <li><strong>YouTube Videos:</strong> Watch embedded videos on various agriculture topics for more insights.</li>
+        <li><strong>Contact Us:</strong> Reach out to us with your inquiries or problems using the contact form.</li>
+        <li><strong>Community Messages:</strong> Share and read messages from the community to connect with others.</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    // Modal toggle functions
+    function openModal(modal) {
+      modal.style.display = 'flex';
+    }
+    function closeModal(modal) {
+      modal.style.display = 'none';
+    }
+
+    // Get modal elements
+    const privacyPolicyModal = document.getElementById('privacyPolicyModal');
+    const contactUsModal = document.getElementById('contactUsModal');
+    const communityMessagesModal = document.getElementById('communityMessagesModal');
+    const whoUsesModal = document.getElementById('whoUsesModal');
+
+    // Get buttons
+    const privacyPolicyBtn = document.getElementById('privacyPolicyBtn');
+    const contactUsBtn = document.getElementById('contactUsBtn');
+    const communityMessagesBtn = document.getElementById('communityMessagesBtn');
+    const whoUsesBtn = document.getElementById('whoUsesBtn');
+
+    // Get close buttons
+    const closePrivacyPolicy = document.getElementById('closePrivacyPolicy');
+    const closeContactUs = document.getElementById('closeContactUs');
+    const closeCommunityMessages = document.getElementById('closeCommunityMessages');
+    const closeWhoUses = document.getElementById('closeWhoUses');
+
+    // Event listeners for open buttons
+    privacyPolicyBtn.addEventListener('click', () => openModal(privacyPolicyModal));
+    contactUsBtn.addEventListener('click', () => openModal(contactUsModal));
+    communityMessagesBtn.addEventListener('click', () => openModal(communityMessagesModal));
+    whoUsesBtn.addEventListener('click', () => openModal(whoUsesModal));
+
+    // Event listeners for close buttons
+    closePrivacyPolicy.addEventListener('click', () => closeModal(privacyPolicyModal));
+    closeContactUs.addEventListener('click', () => closeModal(contactUsModal));
+    closeCommunityMessages.addEventListener('click', () => closeModal(communityMessagesModal));
+    closeWhoUses.addEventListener('click', () => closeModal(whoUsesModal));
+
+    // Close modals when clicking outside modal content
+    window.addEventListener('click', (event) => {
+      if (event.target === privacyPolicyModal) closeModal(privacyPolicyModal);
+      if (event.target === contactUsModal) closeModal(contactUsModal);
+      if (event.target === communityMessagesModal) closeModal(communityMessagesModal);
+      if (event.target === whoUsesModal) closeModal(whoUsesModal);
+    });
+
+    // Contact Us form submission
+    const modalContactForm = document.getElementById('modalContactForm');
+    const modalContactFormMessage = document.getElementById('modalContactFormMessage');
+
+    modalContactForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      modalContactFormMessage.textContent = 'Thank you for reaching out! We will get back to you soon.';
+      modalContactForm.reset();
+    });
+
+    // Community Messages functionality
+    const communityMessagesList = document.getElementById('communityMessagesList');
+    const communityMessageForm = document.getElementById('communityMessageForm');
+    const communityMessageFormMessage = document.getElementById('communityMessageFormMessage');
+
+    // Load messages from localStorage
+    function loadCommunityMessages() {
+      const messages = JSON.parse(localStorage.getItem('communityMessages') || '[]');
+      communityMessagesList.innerHTML = '';
+      messages.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = 'community-message';
+        div.innerHTML = `<strong>${msg.name}</strong>: ${msg.message}`;
+        communityMessagesList.appendChild(div);
+      });
+    }
+    loadCommunityMessages();
+
+    // Save message to localStorage
+    function saveCommunityMessage(name, message) {
+      const messages = JSON.parse(localStorage.getItem('communityMessages') || '[]');
+      messages.push({ name, message });
+      localStorage.setItem('communityMessages', JSON.stringify(messages));
+    }
+
+    communityMessageForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const name = document.getElementById('communityName').value.trim();
+      const message = document.getElementById('communityMessage').value.trim();
+      if (!name || !message) {
+        communityMessageFormMessage.textContent = 'Please fill out both fields.';
+        return;
+      }
+      saveCommunityMessage(name, message);
+      loadCommunityMessages();
+      communityMessageFormMessage.textContent = 'Message posted successfully.';
+      communityMessageForm.reset();
+    });
+  </script>
+
+  <script>
+    async function predictYield() {
+      const cropType = document.getElementById('cropTypeYield').value;
+      const soilType = document.getElementById('soilTypeYield').value;
+      const areaSize = parseFloat(document.getElementById('areaSize').value);
+      const rainfall = parseFloat(document.getElementById('rainfall').value);
+
+      if (!cropType || !soilType || isNaN(areaSize) || isNaN(rainfall)) {
+        document.getElementById('yieldResult').textContent = 'Please fill in all fields correctly.';
+        return;
+      }
+
+      // Map soilType to soil_quality integer for backend
+      const soilQualityMap = {
+        'loam': 4,
+        'sandy': 2,
+        'clay': 3,
+        'peat': 5,
+        'chalk': 1
+      };
+      const soil_quality = soilQualityMap[soilType] || 3;
+
+      // For simplicity, use average temperature fixed or based on cropType (could be improved)
+      const temperatureMap = {
+        'wheat': 20,
+        'corn': 25,
+        'rice': 28,
+        'soybean': 22,
+        'cotton': 30
+      };
+      const temperature = temperatureMap[cropType] || 25;
+
+      try {
+        const params = new URLSearchParams({
+          rainfall: rainfall.toString(),
+          temperature: temperature.toString(),
+          soil_quality: soil_quality.toString()
+        });
+        const response = await fetch(`http://localhost:5000/api/predict_yield?${params.toString()}`);
+        const data = await response.json();
+        if (response.ok) {
+          const yieldValue = data.yield * areaSize;
+          document.getElementById('yieldResult').textContent = `Estimated Yield: ${yieldValue.toFixed(2)} units`;
+        } else {
+          document.getElementById('yieldResult').textContent = 'Error fetching yield prediction.';
+        }
+      } catch (error) {
+        document.getElementById('yieldResult').textContent = 'Error connecting to backend.';
+      }
+    }
+
+    async function assessIrrigation() {
+      const cropType = document.getElementById('cropTypeIrrigation').value;
+      const soilMoisture = parseFloat(document.getElementById('soilMoisture').value);
+      const weatherCondition = document.getElementById('weatherCondition').value;
+
+      if (!cropType || isNaN(soilMoisture) || !weatherCondition) {
+        document.getElementById('irrigationResult').textContent = 'Please fill in all fields correctly.';
+        return;
+      }
+
+      // Map weatherCondition to current_temp for backend (simplified)
+      const weatherTempMap = {
+        'sunny': 30,
+        'cloudy': 22,
+        'rainy': 18,
+        'windy': 25
+      };
+      const current_temp = weatherTempMap[weatherCondition] || 25;
+
+      try {
+        const params = new URLSearchParams({
+          moisture: soilMoisture.toString(),
+          current_temp: current_temp.toString()
+        });
+        const response = await fetch(`http://localhost:5000/api/check_irrigation?${params.toString()}`);
+        const data = await response.json();
+        if (response.ok) {
+          document.getElementById('irrigationResult').textContent = `Irrigation Advice: ${data.advice}`;
+        } else {
+          document.getElementById('irrigationResult').textContent = 'Error fetching irrigation advice.';
+        }
+      } catch (error) {
+        document.getElementById('irrigationResult').textContent = 'Error connecting to backend.';
+      }
+    }
+
+    async function suggestRotation() {
+      const lastCrop = document.getElementById('lastCrop').value;
+      const soilType = document.getElementById('soilTypeRotation').value;
+
+      if (!lastCrop || !soilType) {
+        document.getElementById('rotationResult').textContent = 'Please fill in all fields correctly.';
+        return;
+      }
+
+      try {
+        const params = new URLSearchParams({
+          current_crop: lastCrop
+        });
+        const response = await fetch(`http://localhost:5000/api/suggest_crop?${params.toString()}`);
+        const data = await response.json();
+        if (response.ok) {
+          document.getElementById('rotationResult').textContent = `Suggested Crop: ${data.suggestion}`;
+        } else {
+          document.getElementById('rotationResult').textContent = 'Error fetching crop suggestion.';
+        }
+      } catch (error) {
+        document.getElementById('rotationResult').textContent = 'Error connecting to backend.';
+      }
+    }
+  </script>
+</body>
+</html>
