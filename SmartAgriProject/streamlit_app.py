@@ -623,7 +623,7 @@ def get_beginner_recommendation(budget, land_size, experience):
     
     return sorted(recommendations, key=lambda x: x["roi"], reverse=True)[:5]
 
-# Voice assistant simulation
+# Voice assistant simulation (audio libraries removed for cloud deployment)
 def process_voice_command(command):
     command = command.lower()
     
@@ -696,7 +696,7 @@ with st.sidebar:
         if st.button("🔊 Process Voice Command"):
             response = process_voice_command(selected_command)
             st.success(f"🤖 {response}")
-            st.audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT")
+            # Audio playback removed for cloud deployment compatibility
 
 # Create tabs
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
